@@ -2,7 +2,7 @@ streamlit run app.py
 pandas
 numpy
 plotly
-prophet
+fbprophet
 openpyxl
 matplotlib
 seaborn
