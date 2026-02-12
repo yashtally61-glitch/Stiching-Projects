@@ -1,20 +1,16 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
 import warnings
 warnings.filterwarnings('ignore')
 
 def generate_master_report():
-    """
-    Generate Master Report using SAMPLE DATA (No CSV Required)
-    """
-    
-    print("=" * 70)
-    print("STITCHING PROJECT - MASTER REPORT GENERATOR (SAMPLE DATA)")
-    print("=" * 70)
-    
+
+    st.title("🧵 Stitching Project - Master Report Generator (Sample Data)")
+
     # --- 1. CREATE SAMPLE DATA ---
-    print("\n[Step 1] Creating sample issue records...")
-    
+    st.subheader("Step 1: Sample Issue Records Created")
+
     data = {
         "Date Of Issue": pd.date_range(start="2024-01-01", periods=10, freq="15D"),
         "Names Of Style": ["Style A", "Style B", "Style C", "Style A", "Style B",
@@ -31,66 +27,59 @@ def generate_master_report():
         "Outsider Cost": [12, 14, 13, 15, 16, 14, 11, 10, 14, 17],
         "Issue Chalan Number": [101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
     }
-    
-    df_issues = pd.DataFrame(data)
-    
-    print(f"✓ Sample data created ({len(df_issues)} records)")
-    
-    # --- 2. STYLE-WISE ANALYSIS ---
-    print("\n[Step 2] Analyzing Style Profitability...")
-    
-    style_analysis = df_issues.groupby('Names Of Style').agg({
-        'Total issue': 'sum',
-        'Recevided': 'sum',
-        'Total Expenses': 'sum',
-        'Stiching Cost Accrued': 'mean',
-        'Total Cost': 'mean',
-        'Comparison Costing': 'mean',
-        'Difference From Comparison Costing': 'sum',
-        'Outsider Cost': 'mean'
-    }).reset_index()
-    
-    style_analysis['Profit_Loss'] = style_analysis['Difference From Comparison Costing']
-    style_analysis['Cost_Per_Piece'] = style_analysis['Total Expenses'] / style_analysis['Total issue']
-    style_analysis['Efficiency_Ratio'] = (
-        style_analysis['Recevided'] / style_analysis['Total issue'] * 100
-    ).round(2)
-    
-    print("✓ Style analysis completed")
-    print(style_analysis)
-    
-    # --- 3. MONTHLY TRENDS ---
-    print("\n[Step 3] Monthly Trend Analysis...")
-    
-    df_issues['Year_Month'] = df_issues['Date Of Issue'].dt.to_period('M')
-    
-    monthly_trends = df_issues.groupby('Year_Month').agg({
-        'Total issue': 'sum',
-        'Recevided': 'sum',
-        'Total Expenses': 'sum',
-        'Difference From Comparison Costing': 'sum'
-    }).reset_index()
-    
-    print("✓ Monthly trends completed")
-    print(monthly_trends)
-    
-    # --- 4. COST SUMMARY ---
-    print("\n[Step 4] Cost Dynamics Summary...")
-    
-    summary = {
-        "Total Issues": df_issues["Total issue"].sum(),
-        "Total Received": df_issues["Recevided"].sum(),
-        "Total Expenses": df_issues["Total Expenses"].sum(),
-        "Overall Profit/Loss": df_issues["Difference From Comparison Costing"].sum(),
-        "Overall Efficiency %": (df_issues["Recevided"].sum() / df_issues["Total issue"].sum()) * 100
-    }
-    
-    print(summary)
-    
-    # --- 5. FINISH ---
-    print("\n" + "=" * 70)
-    print("REPORT GENERATED SUCCESSFULLY! 🎉 (Sample Data)")
-    print("=" * 70)
 
-if __name__ == "__main__":
-    generate_master_report()
+    df = pd.DataFrame(data)
+    st.dataframe(df)
+
+    # --- 2. STYLE-WISE ANALYSIS ---
+    st.subheader("Step 2: Style Profitability Analysis")
+
+    style_analysis = df.groupby("Names Of Style").agg({
+        "Total issue": "sum",
+        "Recevided": "sum",
+        "Total Expenses": "sum",
+        "Stiching Cost Accrued": "mean",
+        "Total Cost": "mean",
+        "Comparison Costing": "mean",
+        "Difference From Comparison Costing": "sum",
+        "Outsider Cost": "mean"
+    }).reset_index()
+
+    style_analysis["Cost_Per_Piece"] = style_analysis["Total Expenses"] / style_analysis["Total issue"]
+    style_analysis["Efficiency_Ratio"] = (
+        style_analysis["Recevided"] / style_analysis["Total issue"] * 100
+    )
+
+    st.dataframe(style_analysis)
+
+    # --- 3. MONTHLY TRENDS ---
+    st.subheader("Step 3: Monthly Trends")
+
+    df["Year_Month"] = df["Date Of Issue"].dt.to_period("M")
+    monthly_trends = df.groupby("Year_Month").agg({
+        "Total issue": "sum",
+        "Recevided": "sum",
+        "Total Expenses": "sum",
+        "Difference From Comparison Costing": "sum"
+    }).reset_index()
+
+    st.dataframe(monthly_trends)
+
+    # --- 4. SUMMARY BOX ---
+    st.subheader("Step 4: Cost Summary")
+
+    total_issues = df["Total issue"].sum()
+    total_received = df["Recevided"].sum()
+    total_expense = df["Total Expenses"].sum()
+    total_profit = df["Difference From Comparison Costing"].sum()
+    efficiency = (total_received / total_issues) * 100
+
+    st.metric("Total Issues", total_issues)
+    st.metric("Total Received", total_received)
+    st.metric("Total Expenses", total_expense)
+    st.metric("Overall Loss/Profit", total_profit)
+    st.metric("Production Efficiency (%)", round(efficiency, 2))
+
+
+st.set_page_config(layout="wide")
+generate_master_report()
