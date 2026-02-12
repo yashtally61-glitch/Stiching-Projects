@@ -1,4 +1,4 @@
-streamlit
+streamlit run app.py
 pandas
 numpy
 plotly
