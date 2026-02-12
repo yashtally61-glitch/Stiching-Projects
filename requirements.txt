@@ -1,8 +1,7 @@
-streamlit run app.py
+streamlit
 pandas
 numpy
 plotly
-fbprophet
-openpyxl
 matplotlib
 seaborn
+openpyxl
